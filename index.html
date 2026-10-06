@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Кто конкурент Drinkit?</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#f5f3ed;--ink:#313131;--blue:#334cdb;--beige:#c2bcb0;--mute:#a39f95}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;height:100%;background:var(--bg);color:var(--ink);font-family:Inter,system-ui,Arial,sans-serif;font-weight:500;letter-spacing:-.02em;-webkit-font-smoothing:antialiased;overflow:hidden}
+.app{height:100%;display:flex;flex-direction:column;padding:max(16px,env(safe-area-inset-top)) 16px max(16px,env(safe-area-inset-bottom))}
+h1{font-size:24px;line-height:1.1;letter-spacing:-.04em;font-weight:600;margin:0}
+.sub{color:var(--mute);font-size:14px;margin:6px 0 0}
+.sky{position:relative;flex:1;min-height:0;margin:10px -16px;overflow:auto;display:flex;flex-wrap:wrap;gap:8px;align-content:flex-start;padding:8px 16px}.js .sky{display:block;overflow:hidden;padding:0}
+.bub{position:relative;border:0;border-radius:999px;padding:8px 12px;font:inherit;font-size:13.5px;line-height:1.15;touch-action:manipulation;user-select:none;-webkit-user-select:none;background:#fff;color:var(--ink);box-shadow:inset 0 0 0 1.5px var(--beige),0 4px 14px rgba(49,49,49,.06);max-width:44vw;text-align:center;will-change:transform;transition:background .25s,color .25s,box-shadow .25s}
+.js .bub{position:absolute;left:0;top:0}.bub.on{background:var(--blue);color:#fff;box-shadow:0 6px 18px rgba(51,76,219,.35)}
+.go{border:0;border-radius:999px;padding:17px;font:inherit;font-size:19px;font-weight:600;background:var(--blue);color:#fff;width:100%}
+.go:disabled{background:#c9cfee}
+.cnt{text-align:center;color:var(--mute);font-size:13px;margin-bottom:8px}
+.res{position:fixed;inset:0;background:var(--blue);color:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:24px;opacity:0;pointer-events:none;transition:opacity .5s}
+.res.open{opacity:1;pointer-events:auto}
+.res .k{font-size:22px;opacity:.85}
+.res .l{font-size:min(62vw,340px);line-height:.9;font-weight:600;letter-spacing:-.05em;transform:scale(.6);transition:transform .7s cubic-bezier(.2,1.4,.4,1)}
+.res.open .l{transform:scale(1)}
+.res .t{font-size:15px;opacity:.8;max-width:30ch;margin:8px 0 26px}
+.res button{border:0;border-radius:999px;padding:12px 20px;font:inherit;font-size:15px;background:rgba(255,255,255,.18);color:#fff}
+@media (prefers-reduced-motion:reduce){.res .l{transition:none}}
+</style></head><body>
+<div class="app">
+<h1>Кто может забрать покупки у новой точки Drinkit?</h1>
+<p class="sub">Нажмите на всех, кого считаете конкурентами.</p>
+<div class="sky" id="sky"><button class="bub" type="button" data-i="0">сетевая кофейня</button><button class="bub" type="button" data-i="1">независимая кофейня</button><button class="bub" type="button" data-i="2">specialty кофейня</button><button class="bub" type="button" data-i="3">киоск кофе у метро</button><button class="bub" type="button" data-i="4">кофе-точка «Магнита»</button><button class="bub" type="button" data-i="5">кофе на АЗС</button><button class="bub" type="button" data-i="6">автомат на вокзале</button><button class="bub" type="button" data-i="7">«Вкусно и точка»</button><button class="bub" type="button" data-i="8">пекарня у дома</button><button class="bub" type="button" data-i="9">кофе в ресторане</button><button class="bub" type="button" data-i="10">кофе в лобби отеля</button><button class="bub" type="button" data-i="11">кофемашина в офисе</button><button class="bub" type="button" data-i="12">энергетик</button><button class="bub" type="button" data-i="13">чай навынос</button><button class="bub" type="button" data-i="14">вода в магазине</button><button class="bub" type="button" data-i="15">холодный кофе в банке</button><button class="bub" type="button" data-i="16">зерно для дома</button><button class="bub" type="button" data-i="17">растворимый кофе</button><button class="bub" type="button" data-i="18">капсулы</button><button class="bub" type="button" data-i="19">дрип-пакеты</button><button class="bub" type="button" data-i="20">кофемашина домой</button><button class="bub" type="button" data-i="21">термос из дома</button><button class="bub" type="button" data-i="22">бесплатный кофе на работе</button></div>
+<div class="cnt" id="cnt">Ничего не выбрано</div>
+<button class="go" id="go" type="button" disabled>Выбрать</button>
+</div>
+<div class="res" id="res" role="dialog" aria-live="polite"><div class="k">Ваша команда</div><div class="l" id="let"></div><div class="t">Перейдите к своей команде. Распределение предварительное, это не оценка знаний.</div><button type="button" id="back">Изменить выбор</button></div>
+<script>
+// Карточки и их граница. ? = спорные, на команду не влияют
+const N=[["сетевая кофейня","А"],["независимая кофейня","А"],["specialty кофейня","А"],["киоск кофе у метро","А"],
+["кофе-точка «Магнита»","Б"],["кофе на АЗС","Б"],["автомат на вокзале","Б"],["«Вкусно и точка»","Б"],
+["пекарня у дома","Б"],["кофе в ресторане","Б"],["кофе в лобби отеля","Б"],["кофемашина в офисе","Б"],
+["энергетик","В"],["чай навынос","В"],["вода в магазине","В"],["холодный кофе в банке","В"],
+["зерно для дома","Г"],["растворимый кофе","Г"],["капсулы","Г"],["дрип-пакеты","Г"],["кофемашина домой","Г"],
+["термос из дома","?"],["бесплатный кофе на работе","?"]];
+// Правило «вышел за границу»: 2 и больше карточки из широкой группы (Б, В, Г) ведут в эту команду;
+// если таких групп несколько, побеждает большая доля выбранных карточек группы; иначе команда А
+const SZ={};N.forEach(n=>SZ[n[1]]=(SZ[n[1]]||0)+1);
+function team(sel){const c={А:0,Б:0,В:0,Г:0};sel.forEach(i=>{if(N[i][1] in c)c[N[i][1]]++});
+const cand=["Б","Г","В"].filter(k=>c[k]>=2);if(cand.length)return cand.reduce((a,k)=>c[k]/SZ[k]>=c[a]/SZ[a]?k:a);
+if(c.А||c.Б)return"А";if(c.В||c.Г)return c.В>=c.Г?"В":"Г";return null}
+document.documentElement.classList.add("js");
+const sky=document.getElementById("sky"),sel=new Set(),go=document.getElementById("go"),cnt=document.getElementById("cnt");
+const B=[...sky.querySelectorAll(".bub")].sort(()=>Math.random()-.5).map(b=>{const i=+b.dataset.i;
+const o={b,x:0,y:0,w:0,h:0,hold:0};const ang=Math.random()*6.28,sp=22+Math.random()*16;o.vx=Math.cos(ang)*sp;o.vy=Math.sin(ang)*sp;
+b.addEventListener("pointerdown",e=>{e.preventDefault();o.hold=performance.now()+900;sel.has(i)?sel.delete(i):sel.add(i);b.classList.toggle("on");const n=sel.size;cnt.textContent=n?("Выбрано: "+n):"Ничего не выбрано";go.disabled=!n});
+b.addEventListener("click",e=>e.preventDefault());return o});
+function place(){const W=sky.clientWidth,H=sky.clientHeight,cols=W>700?4:W>480?3:2,rows=Math.ceil(B.length/cols),cw=W/cols,rh=H/rows;
+B.forEach((o,k)=>{o.w=o.b.offsetWidth;o.h=o.b.offsetHeight;const c=k%cols,r=Math.floor(k/cols),sx=(r%2?.25:-.25)*cw*.3;
+o.x=Math.max(2,Math.min(W-o.w-2,(c+.5)*cw-o.w/2+sx+(Math.random()-.5)*cw*.25));o.y=Math.max(2,Math.min(H-o.h-2,(r+.5)*rh-o.h/2+(Math.random()-.5)*rh*.3))})}
+place();addEventListener("resize",place);
+const still=matchMedia("(prefers-reduced-motion:reduce)").matches;let last=0;
+function fly(now){const dt=Math.min(.05,(now-last)/1000||0);last=now;const W=sky.clientWidth,H=sky.clientHeight;
+if(!still){B.forEach(o=>{if(now<o.hold)return;o.x+=o.vx*dt;o.y+=o.vy*dt;
+if(o.x<0){o.x=0;o.vx=Math.abs(o.vx)}if(o.x+o.w>W){o.x=W-o.w;o.vx=-Math.abs(o.vx)}
+if(o.y<0){o.y=0;o.vy=Math.abs(o.vy)}if(o.y+o.h>H){o.y=H-o.h;o.vy=-Math.abs(o.vy)}});
+for(let i=0;i<B.length;i++)for(let j=i+1;j<B.length;j++){const a=B[i],b=B[j];const ox=Math.min(a.x+a.w,b.x+b.w)-Math.max(a.x,b.x),oy=Math.min(a.y+a.h,b.y+b.h)-Math.max(a.y,b.y);
+if(ox>0&&oy>0){if(ox<oy){const s=a.x<b.x?-1:1;a.x+=s*ox/2;b.x-=s*ox/2;if((a.vx-b.vx)*s<0){const t=a.vx;a.vx=b.vx;b.vx=t}}else{const s=a.y<b.y?-1:1;a.y+=s*oy/2;b.y-=s*oy/2;if((a.vy-b.vy)*s<0){const t=a.vy;a.vy=b.vy;b.vy=t}}}}}
+B.forEach(o=>o.b.style.transform=`translate(${o.x.toFixed(1)}px,${o.y.toFixed(1)}px)`);requestAnimationFrame(fly)}
+requestAnimationFrame(fly);
+go.onclick=()=>{const t=team(sel),res=document.getElementById("res");document.getElementById("let").textContent=t||"?";
+res.querySelector(".t").textContent=t?"Перейдите к своей команде. Распределение предварительное, это не оценка знаний.":"Вы выбрали только спорные варианты. Добавьте еще хотя бы одного конкурента.";res.classList.add("open")};
+document.getElementById("back").onclick=()=>document.getElementById("res").classList.remove("open");
+</script></body></html>
